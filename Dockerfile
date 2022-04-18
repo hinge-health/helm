@@ -28,9 +28,5 @@ RUN apk add --no-cache ca-certificates \
 
 ENV PYTHONPATH "/usr/lib/python3.8/site-packages/"
 
-RUN mkdir -p /github/home/.helm && \
-    cp -R /root/.helm /github/home/.helm && \
-    chmod 666 /github/home/.helm
-
 COPY . /usr/src/
 ENTRYPOINT ["node", "/usr/src/index.js"]
