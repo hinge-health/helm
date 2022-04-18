@@ -8,6 +8,7 @@ ENV HELM_3_FILE="helm-v3.4.2-linux-amd64.tar.gz"
 RUN apk add --no-cache ca-certificates \
     --repository http://dl-3.alpinelinux.org/alpine/edge/community/ \
     jq curl bash nodejs && \
+    # Install python3 and AWS CLI:
     apk add --update --no-cache python3 && \
     ln -sf python3 /usr/bin/python && \
     python3 -m ensurepip && \
@@ -26,6 +27,10 @@ RUN apk add --no-cache ca-certificates \
     helm init --client-only
 
 ENV PYTHONPATH "/usr/lib/python3.8/site-packages/"
+
+RUN mkdir -p /github/home/.helm && \
+    cp -R /root/.helm /github/home/.helm && \
+    chmod 666 /github/home/.helm
 
 COPY . /usr/src/
 ENTRYPOINT ["node", "/usr/src/index.js"]
