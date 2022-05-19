@@ -139,10 +139,7 @@ function renderFiles(files, data) {
  * @param {string} release
  */
 function deleteCmd(helm, namespace, release) {
-  if (helm === "helm3") {
-    return ["delete", "-n", namespace, release];
-  }
-  return ["delete", "--purge", release];
+  return ["delete", "-n", namespace, release];
 }
 
 /*
@@ -293,14 +290,14 @@ async function run() {
     process.env.XDG_DATA_HOME = "/root/.helm/"
     process.env.XDG_CACHE_HOME = "/root/.helm/"
     process.env.XDG_CONFIG_HOME = "/root/.helm/"
-  
+
     // Setup necessary files.
     if (process.env.KUBECONFIG_FILE) {
       process.env.KUBECONFIG = "./kubeconfig.yml";
       await writeFile(process.env.KUBECONFIG, process.env.KUBECONFIG_FILE);
     }
-    
-    const helm = getInput("helm") || "helm3";
+
+    const helm = "helm_upgrade_logs";
     core.debug(`param: helm = "${helm}"`);
 
     for(const command of commands) {
