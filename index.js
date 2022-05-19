@@ -173,8 +173,8 @@ async function addRepo(helm) {
     if (repoUsername) args.push(`--username=${repoUsername}`);
     if (repoPassword) args.push(`--password=${repoPassword}`);
 
-    await exec.exec(helm, args);
-    await exec.exec(helm, ["repo", "update"])
+    await exec.exec("/usr/bin/helm", args);
+    await exec.exec("/usr/bin/helm", ["repo", "update"])
   }
 
   return Promise.resolve()
@@ -220,7 +220,6 @@ async function deploy(helm) {
 
   // Setup command options and arguments.
   let args = [
-    "upgrade",
     release,
     chart,
     "--install",

@@ -14,11 +14,10 @@ RUN apk add --no-cache ca-certificates \
     ln -sf python3 /usr/bin/python && \
     python3 -m ensurepip && \
     pip3 install awscli && \
-    # # Install helm version 2:
-    # curl -L ${BASE_URL}/${HELM_2_FILE} |tar xvz && \
-    # mv linux-amd64/helm /usr/bin/helm && \
-    # chmod +x /usr/bin/helm && \
-    # rm -rf linux-amd64 && \
+    # # Install kubect
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    chmod +x ./kubectl && \
+    mv ./kubectl /usr/bin/kubectl && \
     # Install helm version 3:
     curl -L ${BASE_URL}/${HELM_3_FILE} |tar xvz && \
     mv linux-amd64/helm /usr/bin/helm && \
