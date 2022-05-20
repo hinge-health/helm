@@ -18,7 +18,7 @@ RUN apk add --no-cache ca-certificates \
     chmod +x /usr/bin/helm3 && \
     rm -rf linux-amd64 && \
     # Install helm-github plugin
-    helm plugin install ./helm-github
+    helm3 plugin install ./helm-github
 
 
 ENV PYTHONPATH "/usr/lib/python3.8/site-packages/"
