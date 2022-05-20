@@ -11,7 +11,7 @@ RUN apk add --no-cache ca-certificates \
     apk add --update --no-cache python3 && \
     ln -sf python3 /usr/bin/python && \
     python3 -m ensurepip && \
-    pip3 install awscli
+    pip3 install awscli git
     # Install helm version 3:
 RUN curl -L ${BASE_URL}/${HELM_3_FILE} |tar xvz && \
     mv linux-amd64/helm /usr/bin/helm && \
