@@ -293,14 +293,14 @@ async function run() {
     process.env.XDG_DATA_HOME = "/root/.helm/"
     process.env.XDG_CACHE_HOME = "/root/.helm/"
     process.env.XDG_CONFIG_HOME = "/root/.helm/"
-  
+
     // Setup necessary files.
     if (process.env.KUBECONFIG_FILE) {
       process.env.KUBECONFIG = "./kubeconfig.yml";
       await writeFile(process.env.KUBECONFIG, process.env.KUBECONFIG_FILE);
     }
-    
-    const helm = getInput("helm") || "helm3";
+
+    const helm = "helm";
     core.debug(`param: helm = "${helm}"`);
 
     for(const command of commands) {

@@ -14,14 +14,14 @@ RUN apk add --no-cache ca-certificates \
     pip3 install awscli && \
     # Install helm version 3:
     curl -L ${BASE_URL}/${HELM_3_FILE} |tar xvz && \
-    mv linux-amd64/helm /usr/bin/helm3 && \
-    chmod +x /usr/bin/helm3 && \
+    mv linux-amd64/helm /usr/bin/helm && \
+    chmod +x /usr/bin/helm && \
     rm -rf linux-amd64
 
     # Install helm-github plugin
 
 COPY helm-github helm-github
-RUN helm3 plugin install ./helm-github
+RUN helm plugin install ./helm-github
 
 
 ENV PYTHONPATH "/usr/lib/python3.8/site-packages/"
