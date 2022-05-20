@@ -139,10 +139,7 @@ function renderFiles(files, data) {
  * @param {string} release
  */
 function deleteCmd(helm, namespace, release) {
-  if (helm === "helm3") {
-    return ["delete", "-n", namespace, release];
-  }
-  return ["delete", "--purge", release];
+  return ["delete", "-n", namespace, release];
 }
 
 /*
