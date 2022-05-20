@@ -157,6 +157,8 @@ async function addPlugin(helm) {
     core.debug(`adding custom plugin ${plugin}`);
 
     const args = [
+      "plugin",
+      "install",
       plugin,
     ]
 
