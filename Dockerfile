@@ -21,7 +21,7 @@ RUN curl -L ${BASE_URL}/${HELM_3_FILE} |tar xvz && \
     # Install helm-github plugin
 
 COPY helm-github helm-github
-RUN helm plugin install ./helm-github
+# RUN helm plugin install ./helm-github
 
 
 ENV PYTHONPATH "/usr/lib/python3.8/site-packages/"

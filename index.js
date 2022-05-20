@@ -146,6 +146,27 @@ function deleteCmd(helm, namespace, release) {
 }
 
 /*
+ * Optionally adds a plugin
+ */
+async function addPlugin(helm) {
+  const plugin = getInput("plugin");
+
+  core.debug(`param: plugin = "${plugin}"`);
+
+  if (plugin !== "") {
+    core.debug(`adding custom plugin ${plugin}`);
+
+    const args = [
+      plugin,
+    ]
+
+    await exec.exec(helm, args);
+  }
+
+  return Promise.resolve()
+}
+
+/*
  * Optionally add a helm repository
  */
 async function addRepo(helm) {
@@ -285,7 +306,7 @@ async function deploy(helm) {
  * Run executes the helm deployment.
  */
 async function run() {
-  const commands = [addRepo, deploy]
+  const commands = [addPlugin, addRepo, deploy]
 
   try {
     await status("pending");
