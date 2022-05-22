@@ -31,6 +31,7 @@ RUN apk add --no-cache ca-certificates \
 
 ADD helm-github /helm-github
 ADD helm_upgrade_logs.sh /usr/local/bin/helm_upgrade_logs.sh
+ADD hinge-service /hinge-service
 
 RUN chmod +x /usr/local/bin/helm_upgrade_logs.sh
 
