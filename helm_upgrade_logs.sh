@@ -312,7 +312,7 @@ function main() {
 release="$(get_first_non_option "$@")"
 namespace="$(get_namespace "$@")"
 env
-c helm "$@" &
+c helm upgrade "$@" &
 pid="$!"
 
 watch_pods "${release}" "${namespace}" &
