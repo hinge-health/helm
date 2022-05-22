@@ -149,7 +149,7 @@ function deleteCmd(helm, namespace, release) {
  * Optionally adds a plugin
  */
 async function addPlugins(helm) {
-  const plugin = getInput("plugins");
+  const plugins = getInput("plugins");
 
   core.debug(`param: plugins = "${plugins}"`);
 
