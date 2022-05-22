@@ -1,0 +1,306 @@
+### Default values for hinge-service.
+
+## nameOverride will override the service name within templates, defaults to .Release.Name
+nameOverride: ""
+
+## fullNameOverride will override the full service name within templates, defaults to .Release.Name
+fullNameOverride: ""
+
+## clusterName is the name of the k8s cluster
+clusterName: ""
+
+## replicaCount can be set if we're not enabling horizontal pod autoscaling
+replicaCount: 1
+
+## servicePort is the port visible to other cluster resources
+#servicePort: "8080"
+
+## serviceTargetPort is the target port within the container
+#serviceTargetPort: "8080"
+
+## environment sets the datadog environment among other things.
+## Each values file for an app should have a unique environment and ideally
+## these should be a part of the filename e.g. dev-values.yaml
+## We are currently using the environment names "dev", "stage", and "prod".
+## This is required and a default value is not supplied.
+# environment:
+
+## These are the details for the "main" container in the pod, the assumption
+## being that most deployments will have a primary application running, with
+## supplemental workloads (e.g. cron or queue) added either as extentions to the chart
+## or as "additionalContainers."
+containerPort: "8080"
+
+## by default, imageRepository will default to the registry in our prod account,
+## and the app name, e.g. 711154312405.dkr.ecr.us-east-1.amazonaws.com/my-hinge-app
+# imageRepository: "my-hinge-app"
+imageTag: ""
+envVars: {}
+  # USEFUL_ENVIRONMENT_VARIABLE: "useful_value"
+  # ANOTHER_USEFUL_ENVVAR: "good_stuff_here"
+awsSecretsService: {}
+  # USEFUL_AWS_SECRET: secret_key_in_aws
+awsSecretsEnvironment: {}
+  # ANOTHER_USEFUL_AWS_SECRET: per_environment_secret_here
+
+## command overrides the entrypoint of the containers
+command: []
+
+## args overrides the args of the container. If no entrypoint is set it will add arguments
+## to the entrypoint set in the image
+args: []
+
+## imagePullSecrets is YAML that defines credentials for pulling container images
+imagePullSecrets: {}
+
+## noTerm is a boolean that controls the termination policy
+noTerm: false
+
+## livenessProbeType defines the probe type to determine the pod is alive
+livenessProbeType: "httpGet"
+
+## livenessProbeType defines the probe path to determine if the pod is alive
+livenessProbePath: "/healthcheck"
+
+## livenessProbeType defines the probe port to determine if the pod is alive
+## defaults to containerPort
+#livenessProbePort: "8080"
+
+## livenessInitialDelaySeconds is how long to wait before sending liveness probes. defaults to `0
+#livenessInitialDelaySeconds: 0
+
+## livenessPeriodSeconds is the interval for liveness checks. Defaults to 5
+#livenessPeriodSeconds: 5
+
+## livenessFailureThreshold is how many failed liveness checks before declaring a pod dead.
+## default is 10
+#livenessFailureThreshold: 10
+
+## readinessProbeType defines the probe type to determine the pod is ready
+readinessProbeType: "httpGet"
+
+## readinessProbeType defines the probe path to determine if the pod is ready
+readinessProbePath: "/healthcheck"
+
+## readinessProbeType defines the probe port to determine if the pod is ready
+## defaults to containerPort
+#readinessProbePort: "8080"
+
+## readinessInitialDelaySeconds is how long to wait before sending readiness probes. Defaults to 5
+#readinessInitialDelaySeconds: 10
+
+## readinessPeriodSeconds is the interval for readiness checks. Defaults to 10
+#readinessPeriodSeconds: 10
+
+## readinessFailureThreshold is how many failures to accept before declaring the pod unready. Defaults to 2
+#readinessFailureThreshold: 2
+
+## awsAccountId is the AWS account ID where the k8s cluster is hosted
+# awsAccountId: ""
+
+## awsRegion is the AWS region where the k8s cluster is hosted
+awsRegion: "us-west-1"
+
+## serviceAccountCreate specifies whether a service account should be created
+serviceAccountCreate: true
+
+## serviceAccountAnnotations specifies annotations to add to the service account
+serviceAccountAnnotations: {}
+
+## serviceAccountName is the name of the service account to use.
+# If not set and create is true, a name is generated using the fullName template
+# THIS MUST BE THE SAME AS THE DEPLOYMENT NAME FOR MTLS TO WORK
+serviceAccountName: ""
+
+## podAnnotations is YAML that specifies annotations to add to the pod resources
+podAnnotations: {}
+
+## podSecurityContext is YAML that specifies the security context of the pod
+podSecurityContext: {}
+  # fsGroup: 2000
+
+## securityContext is YAML that defines the security context
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+## ingressEnabled controls whether an Ingress resource is created. These are automated ingresses
+## that get a url of app-name.{{ .Values.clusterName }}.k8s.{{ .Values.backendIngressInternalDomain }}
+backendIngressEnabled: true
+
+## Ideally backends are internal only, and this should default to true. If you have to make a
+## "backend" service publically accessible for testing or contractor access, consider including an
+## allow-list of cidrs in backendIngressAllowSourceCidrs.
+backendIngressInternal: true
+
+## backendIngressDomain is associated with a private load balancer
+## "private" in this context (for now) could be either an internal or internet-facing.
+## This should (probably) never be internet-facing in staging or production
+## The DNS will be <full name>.<cluster name>.<internal domain>
+backendIngressDomain: "k8s.hingehealth.dev"
+
+## ingressAlbCertificateArn is a reference to the TLS certificate to use for backend ingresses.
+## This ARN is available from the terraform that generated the cluster, as an output named
+## "cluster_domain_wildcard_cert_arn"
+## the ALB ingress controller should attempt to add the proper certificate automatically
+## if it can find one with a matching hostname.
+## Otherwise, add it manually here.
+# backendIngressCertificateArn: ""
+
+## ingressAllowSourceCidrs is the allow list for the ALBs
+# backendIngressAllowSourceCidrs:
+  # - "165.1.211.166/32"
+  # - "208.127.85.85/32"
+  # - "208.127.231.9/32"
+  # - "134.238.188.92/32"
+  # - "137.83.245.112/32"
+  # - "208.127.154.128/32"
+  # - "134.238.205.9/32"
+  # - "208.127.187.86/32"
+
+## ingressHealthCheckProtocol defines the protocol to use for health checks
+backendIngressHealthCheckProtocol: "HTTP"
+
+## ingressHealthCheckPort defines the port to use for health checks. Defaults to containerPort
+# backendIngressHealthCheckPort: "8080"
+
+## ingressHealthCheckPath is the path to use for health checks
+backendIngressHealthCheckPath: "/healthcheck"
+
+## ingressHealthCheckSuccessCodes is a string of comma separated HTTP success codes to use for health checks
+backendIngressHealthCheckSuccessCodes: "200"
+
+## ingressRules is YAML that allows specifying ingress rules, otherwise, it just provides a single default path
+backendIngressRules: {}
+
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+## external ingresses are not managed automatically. The DNS records and certificates for these will have to
+## be created in advance, and the appropriate URL and matching ACM certificate ARN provided to the chart.
+## they are off by default
+customerFacingIngressEnabled: false
+
+## customerFacingIngressInternal controls whether the ingress is internet facing or not
+customerFacingIngressInternal: false
+
+## customerFacingIngressUrl is the URL for a customer-facing website or service, typically hosted on the
+## hingehealth.com domain in production.
+customerFacingIngressUrl: ""
+
+## ingressAlbCertificateArn is a reference to the TLS certificate to use for customer-facing
+## ingresses, such as for public websites. This ARN will have to come from a certificate
+## created for the DNS record created for this purpose, which all must exist ahead of time.
+## The ALB ingress controller should attempt to add the proper certificate automatically
+## if it can find one with a matching hostname.
+## Otherwise, add it manually here.
+# customerFacingIngressCertificateArn: ""
+
+## customerFacingIngressAllowSourceCidrs lets you set an allow-list of IPs to a customer-facing
+## URL, which might be useful for preprod environments.
+# customerFacingIngressAllowSourceCidrs:
+  # - "165.1.211.166/32"
+  # - "208.127.85.85/32"
+  # - "208.127.231.9/32"
+  # - "134.238.188.92/32"
+  # - "137.83.245.112/32"
+  # - "208.127.154.128/32"
+  # - "134.238.205.9/32"
+  # - "208.127.187.86/32"
+
+## ingressHealthCheckProtocol defines the protocol to use for health checks
+customerFacingIngressHealthCheckProtocol: "HTTP"
+
+## ingressHealthCheckPort defines the port to use for health checks. Defaults to containerPort
+# customerFacingIngressHealthCheckPort: "8080"
+
+## ingressHealthCheckPath is the path to use for health checks
+customerFacingIngressHealthCheckPath: "/healthcheck"
+
+## ingressHealthCheckSuccessCodes is a string of comma separated HTTP success codes to use for health checks
+customerFacingIngressHealthCheckSuccessCodes: "200"
+
+## ingressRules is YAML that allows specifying ingress rules, otherwise, it just provides a single default path.
+customerFacingIngressRules: {}
+
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+
+## resources is YAML that allows specifying resource requests and limits for the pod(s)
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube.
+  # HOWEVER! requests and limits are very much required in production and pre-production
+  # in order for scaling to work, for the cluster itself to properly schedule resources,
+  # and to reduce the chance that nodes suffer resource exhaustion.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+## autoscalingEnabled is a boolean that controls auto scaling
+autoscalingEnabled: false
+
+## autoscalingMinReplicas is an integer that defines the minimum number of replicas for auto scaling
+autoscalingMinReplicas: 1
+
+## autoscalingMaxReplicas is an integer that defines the maximum number of replicas for auto scaling
+autoscalingMaxReplicas: 100
+
+## autoscalingTargetCpuUtilizationPercentage in a integers that defines the trigger CPU percentage for auto scaling
+autoscalingTargetCpuUtilizationPercentage: 80
+
+## autoscalingTargetCpuUtilizationPercentage in a integers that defines the trigger memory utilization for auto scaling
+autoscalingTargetMemoryUtilizationPercentage:
+
+## nodeSelector is YAML that allows specifying how pods are scheduled on k8s nodes
+nodeSelector: {}
+
+## tolerations is an array that defines resources tolerations, including affinity. Check https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+tolerations: []
+
+## affinity is YAML that specifies finer control over node affinity (how pods are scheduled)
+affinity: {}
+
+## **NOTE** cron jobs and database migrations use the same image as the main container
+## Your release can have an associated cron job
+cronJobEnabled: false
+
+## cronJobSchedule is a string in cron notation
+cronJobSchedule: '0 /12 * * *'
+
+## cronJobCommand is the command to run in the cron job, formatted as a list
+cronJobCommand: ["node", "dist/src/cron.main"]
+
+## Your release can have a database scheme migration job that runs as a "pre-upgrade" hook.
+## Note that this will not roll back with the deployment if the deployment is subsequently unsuccessful,
+## so migrations must be backwards-compatible
+preUpgradeHookEnabled: false
+
+## preUpgradeHookCommand is the command to run , formatted as a list
+preUpgradeHookCommand: ["npm", "run", "db:migrate"]
+
+## additionalDeployments define additional long-running processes to be deployed with the service
+## this is similar to what would go into a Procfile.  These will use the same container image and
+## env vars as the root
+additionalDeployments:
+  # - name: queue
+  #   command: ["/bin/sh", "-c", "node dist/src/queue.main"]
+  #   resources:
+  #     limits:
+  #     cpu: 100m
+  #     memory: 128Mi
+  #    requests:
+  #     cpu: 100m
+  #     memory: 128Mi
+  #   replicaCount: 1

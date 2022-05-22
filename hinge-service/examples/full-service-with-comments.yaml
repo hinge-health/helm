@@ -1,0 +1,232 @@
+# This variable will override the hinge-service.name variable inside templates..
+# Defaults to .Release.Name
+nameOverride: "crash-override"
+
+# This variable will override the hinge-service.fullName variable inside templates.
+# Defaults to .Release.Name as well.
+fullNameOverride: "acid-burn"
+
+# These are AWS params about where the cluster is hosted
+awsAccountId: "123456789"
+awsRegion: us-west-1
+
+# This is the name of the environment which controls references to secrets and
+# the private DNS
+environment: dev
+
+# This is the target cluster for the deployment. Informs several variables in the helm chart.
+# We need to make this dynamic to allow multi-cluster deployments
+# For deployment, we can pass this value in via the helm command.
+clusterName: "development"
+
+# This is the port that the container will be listening on.
+containerPort: "3000"
+
+# imageRepository defaults to the <prod registry>/<app-name> but can be specified if that's not
+# where your app images live.
+imageRepository: "905652836327.dkr.ecr.us-west-1.amazonaws.com/my-hinge-app"
+imageTag: "latest"
+
+# if I want to run a different command than the image's entrypoint, add it here in list format
+command: ["/usr/bin/node", "run", "mydangapp.js"]
+
+# It is possible to run the main container with a different command
+# in a step that happens before pods are deployed (a pre-upgrade hook).
+preUpgradeHookEnabled: true
+preUpgradeHookCommand: ["/usr/bin/npm", "run", "db:migrate"]
+
+## **NOTE** cron jobs and database migrations use the same image as the main container
+## Your release can have an associated cron job
+cronJobEnabled: true
+
+## cronJobSchedule is a string in cron notation
+cronJobSchedule: '0 /12 * * *'
+
+## cronJobCommand is the command to run in the cron job, formatted as a list
+cronJobCommand: ["node", "dist/src/cron.main"]
+
+# The env block allows nested k/v for environment variables.
+envVars:
+  USEFUL_ENVIRONMENT_VARIABLE: "useful_value"
+  ANOTHER_USEFUL_ENVVAR: "good_stuff_here"
+  DD_TRACE_AGENT_ENABLED: "true" # to enable APM if it's installed in your app
+
+# The aws_secrets block allows for defining secrets stored in AWS (as opposed to cluster-local)
+# These secrets go through the CSI for synchronization, and inform the secretProviderClass of
+# what keys we want to pull from the secret, depending on whether the secret is scoped to the
+# service or to the environment
+
+# Both service and environment scoped blocks assume that you're mapping environment variables, and
+# are in the format of ENVVAR: key_of_secret. See below for examples.
+# Service scoped secrets - these are stored in <cluster_name>-<service> in AWS secrets manager.
+awsSecretsService:
+  # k/v - In this case, USEFUL_AWS_SECRET is set to the value of secret_key_in_aws.
+  # secret_key_in_aws is contained under <cluster_name>-<service> in AWS Secrets Manager.
+  USEFUL_AWS_SECRET: secret_key_in_aws
+awsSecretsEnvironment:
+  # In this case, per_environment_secret_here is stored under the <environment>-service-secrets secret in AWS.
+  # The idea behind this is having environment specific but service agnostic secrets.
+  ANOTHER_USEFUL_AWS_SECRET: per_environment_secret_here
+
+
+# We need to test if the app is up and responding. See
+# https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+# for more info
+livenessProbeType: httpGet
+
+# Default path is currently /healthcheck but in this example our app is different.
+livenessProbePath: /healthz
+
+# This will probably be the same as the main port for the container, though in the future we may have to choose
+# from more than one container port
+livenessProbePort: 3000
+
+# If, say, our app was slow to start, we could not bother checking it for a while, to
+# avoid failing the check while it takes its time getting started.
+livenessInitialDelaySeconds: 60
+
+# But we'll check it aggressively for some reason after that (for example's sake)
+livenessPeriodSeconds: 2
+
+# And allow it to fail many time before giving up (again, just as an example)
+livenessFailureThreshold: 10
+
+# We do the same thing for readiness probes, except wait even longer and accept far fewer failures
+readinessProbeType: httpGet
+readinessProbePath: /healthz
+readinessProbePort: 3000
+readinessInitialDelaySeconds: 68
+readinessPeriodSeconds: 10
+readinessFailureThreshold: 2
+
+
+# The ingress blocks defines ingresses. There are currently two conceptual types of ingresses, and
+# an application can have one of each kind.
+# "Backend" ingresses have auto-generated DNS entries
+# created for them in the kubernetes cluster's DNS hosted zone and are blanket-covered by
+# wildcard certificates for that zone.
+# "Customer Facing" ingresses are for ingresses that need to be located on a domain kubernetes does
+# not "control," (e.g. my.hingehealth.com) in which case both the DNS records and certificates matching that name
+# **must exist before the app/ingress is deployed!!!**
+
+# boolean to enable/disable generation of automatic ingresses in the cluster's own hosted zone.
+backendIngressEnabled: true
+
+# The goal is to treat backend ingresses as if only other services on the same network will need
+# to talk to them. In reality this won't be true, so we allow a toggle for making backend ingresses
+# internet-facing. Please use good discretion.
+backendIngressInternal: true
+
+# Backend ingresses look like: <this-services-name>.<this-clusters-name>.<backendIngressDomain>
+backendIngressDomain: "k8s.hingehealth.dev"
+
+# The ALB ingress controller should be able to find certificates that match
+# the hosts provided to the ingresses. If not, you have to specify the ARN
+# for the ingress annotation
+#backendIngressAlbCertificateArn: "arn:aws:acm:foo:bar:certificate"
+
+# ingressHealthCheck defines what the load balancer will hit to determine if the service is healthy
+
+# The path for the healthcheck
+backendIngressHealthCheckPath: /
+# The port for the healthcheck
+backendIngressHealthCheckPort: 3000
+# The returned http codes indicating that the service is healthy
+# If we expect a redirect indicates that a service is "healthy", we can specify 200 as well as 301.
+# However, this should only be used for testing purposes as we want a 200 from a healthcheck endpoint.
+backendIngressHealthCheckSuccessCodes: "200,301"
+
+
+## external ingresses are not managed automatically. The DNS records and certificates for these will have to
+## be created in advance, and the appropriate URL provided to the chart. If the cert matches the hostname
+## (which... it should), then the ingress controller will find it and use it on the ingress since we specify port 443.
+## they are off by default
+customerFacingIngressEnabled: true
+
+## customerFacingIngressInternal controls whether the ingress is internet facing or not
+## Since this is for customer-facing URLs, the default is for it to be internet-facing.
+customerFacingIngressInternal: false
+
+## customerFacingIngressUrl is the URL for a customer-facing website or service, typically hosted on the
+## hingehealth.com domain in prod, hingehealth.dev in dev, and hingehealth.io in stage.
+customerFacingIngressUrl: "my.hingehealth.dev"
+
+## ingressAlbCertificateArn is a reference to the TLS certificate to use for customer-facing
+## ingresses, such as for public websites. This ARN will have to come from a certificate
+## created for the DNS record created for this purpose, which all must exist ahead of time.
+## The ALB ingress controller should attempt to add the proper certificate automatically
+## if it can find one with a matching hostname.
+## Otherwise, add it manually here.
+# customerFacingIngressCertificateArn: ""
+
+## customerFacingIngressAllowSourceCidrs lets you set an allow-list of IPs to a customer-facing
+## URL, which might be useful for preprod environments.
+# customerFacingIngressAllowSourceCidrs:
+  # - "165.1.211.166/32"
+  # - "208.127.85.85/32"
+  # - "208.127.231.9/32"
+  # - "134.238.188.92/32"
+  # - "137.83.245.112/32"
+  # - "208.127.154.128/32"
+  # - "134.238.205.9/32"
+  # - "208.127.187.86/32"
+
+## ingressHealthCheckProtocol defines the protocol to use for health checks
+customerFacingIngressHealthCheckProtocol: "HTTP"
+
+## ingressHealthCheckPort defines the port to use for health checks
+customerFacingIngressHealthCheckPort: "8080"
+
+## ingressHealthCheckPath is the path to use for health checks
+customerFacingIngressHealthCheckPath: "/healthcheck"
+
+## ingressHealthCheckSuccessCodes is a string of comma separated HTTP success codes to use for health checks
+customerFacingIngressHealthCheckSuccessCodes: "200"
+
+## ingressRules is YAML that allows specifying ingress rules, otherwise, it just provides a single default path.
+customerFacingIngressRules: {}
+
+# The service block is for overriding values in the service definition
+
+# overriding the service port (which defaults to 8080)
+servicePort: 3000
+
+# If we're not enabling horizontal pod autoscaling, we can set the replica count here
+# replicaCount: 1
+
+# Otherwise, we can configure autoscaling
+
+# Enable autoscaling
+autoscalingEnabled: true
+# Minimum number of replicas
+autoscalingMinReplicas: 1
+# Maximum number of replicas
+autoscalingMaxReplicas: 10
+# CPU utilization needed to trigger a scaling event
+autoscalingTargetCpuUtilizationPercentage: 80
+# Memory utilization needed to trigger a scaling event?
+autoscalingTargetMemoryUtilizationPercentage: 80
+
+# Resource tolerations, including affinity. Check https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+tolerations: []
+
+
+## additionalDeployments define additional long-running processes to be deployed with the service
+## this is similar to what would go into a Procfile.  These will use the same container image and
+## env vars as the root
+additionalDeployments:
+  - name: queue
+    command: ["/bin/sh", "-c", "node dist/src/queue.main"]
+    replicaCount: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1024Mi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+  - name: cron
+    command: ["/bin/sh", "-c", "node dist/src/cron.main"]
+    replicaCount: 1
+
+#### Here be dragons

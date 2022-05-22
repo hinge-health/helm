@@ -1,0 +1,48 @@
+{{- if .Values.cronJobEnabled -}}
+
+{{- /* }}
+Checks to see if AWS secrets are in use.
+{{ */}}
+{{- $awsSecretsEnabled := false -}}
+{{- if .Values.awsSecretsService }}
+  {{- $awsSecretsEnabled = true }}
+{{- end }}
+{{- if .Values.awsSecretsEnvironment }}
+  {{- $awsSecretsEnabled = true }}
+{{- end -}}
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "hinge-service.fullName" . }}-cron-job
+spec:
+  schedule: "{{ .Values.cronJobSchedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: {{ include "hinge-service.fullName" . }}-cron-job
+            command:
+              {{- toYaml .Values.cronJobCommand | nindent 12 }}
+            image: "{{ include "hinge-service.imageRepository" . }}:{{ .Values.imageTag }}"
+            env:
+            {{- include "hinge-service.envVars" . | nindent 12 }}
+            {{- /* }}
+            # For AWS secrets sync to work, we need to mount the secrets-store volume to the pod.
+            # If we're not using AWS secrets, let's not bother mounting this.
+            # Furthermore - none of our services have or will have persistent state outside of the
+            # usual database culprits - if this changes, we'll need to change this to accommodate that.
+            {{- */}}
+            volumeMounts:
+              - name: 'service-secrets'
+                mountPath: '/mnt/secrets-store'
+                readOnly: true
+          volumes:
+            - name: service-secrets
+              csi:
+                driver: 'secrets-store.csi.k8s.io'
+                readOnly: true
+                volumeAttributes:
+                  secretProviderClass: "{{ include "hinge-service.fullName" $ }}-aws"
+{{- end -}}

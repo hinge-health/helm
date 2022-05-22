@@ -1,0 +1,19 @@
+{{ if .Values.backendIngressEnabled }}
+{{ if eq .Values.backendIngressInternal true }}
+This application has a "backend" endpoint that is internal and only available to applications within this VPC or a VPC peered to it (e.g. Aptible)
+{{ else }}
+This application has a "backend" endpoint that is internet-facing and available to anyone with an internet connection unless you have set an IP-based allow-list.
+{{- end }}
+This URL is https://{{ include "hinge-service.fullName" . }}.{{ .Values.clusterName }}.{{ .Values.backendIngressDomain }}
+
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status by running 'kubectl get --namespace {{ .Release.Namespace }} ing -w {{ include "hinge-service.fullName" . }}-backend'
+{{- end }}
+
+{{ if .Values.customerFacingIngressEnabled }}
+This application has a "customer-facing" endpoint is intended to be internet-facing.
+This URL is https://{{ .Values.customerFacingIngressUrl }}
+
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status by running 'kubectl get --namespace {{ .Release.Namespace }} ing -w {{ include "hinge-service.fullName" . }}-customer-facing'
+{{- end }}
