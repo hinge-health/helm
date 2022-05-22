@@ -312,7 +312,7 @@ function main() {
 release="$(get_first_non_option "$@")"
 namespace="$(get_namespace "$@")"
 env
-c helm3 upgrade "$@" --timeout 20 &
+c helm3 upgrade "$@" --timeout 20s &
 pid="$!"
 
 watch_pods "${release}" "${namespace}" &
