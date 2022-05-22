@@ -146,6 +146,31 @@ function deleteCmd(helm, namespace, release) {
 }
 
 /*
+ * Optionally adds a plugin
+ */
+async function addPlugins(helm) {
+  const plugin = getInput("plugins");
+
+  core.debug(`param: plugins = "${plugins}"`);
+
+  if (plugins) {
+    for (const plugin of plugins) {
+      core.debug(`adding custom plugin ${plugin}`);
+
+      const args = [
+        "plugin",
+        "install",
+        plugin,
+      ]
+
+      await exec.exec(helm, args);
+    }
+  }
+
+  return Promise.resolve()
+}
+
+/*
  * Optionally add a helm repository
  */
 async function addRepo(helm) {
@@ -285,7 +310,7 @@ async function deploy(helm) {
  * Run executes the helm deployment.
  */
 async function run() {
-  const commands = [addRepo, deploy]
+  const commands = [addPlugins, addRepo, deploy]
 
   try {
     await status("pending");
@@ -293,13 +318,13 @@ async function run() {
     process.env.XDG_DATA_HOME = "/root/.helm/"
     process.env.XDG_CACHE_HOME = "/root/.helm/"
     process.env.XDG_CONFIG_HOME = "/root/.helm/"
-  
+
     // Setup necessary files.
     if (process.env.KUBECONFIG_FILE) {
       process.env.KUBECONFIG = "./kubeconfig.yml";
       await writeFile(process.env.KUBECONFIG, process.env.KUBECONFIG_FILE);
     }
-    
+
     const helm = getInput("helm") || "helm3";
     core.debug(`param: helm = "${helm}"`);
 
