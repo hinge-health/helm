@@ -150,7 +150,7 @@ function deleteCmd(helm, namespace, release) {
  */
 async function addPlugins(helm) {
   const plugins = getInput("plugins");
-  const jsonpluguns = JSON.parse(plugins);
+  const jsonplugins = JSON.parse(plugins);
 
   core.debug(` plugins = "${plugins}"`);
   core.debug(` jsonplugins = "${jsonplugins}"`);
