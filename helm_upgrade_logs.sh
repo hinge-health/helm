@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## FIXME:
-## gsed on pod log file bork
+## sed on pod log file bork
 ## need to only tail new pods logs
 
 set -euo pipefail
@@ -181,11 +181,11 @@ function prefix_output() {
   local color_code="$2"
   shift 2
 
-  local gsed_replace
-  gsed_replace=$(printf "\033[${color_code}m%s: &\033[0m" "${prefix}")
+  local sed_replace
+  sed_replace=$(printf "\033[${color_code}m%s: &\033[0m" "${prefix}")
 
   # shellcheck disable=SC2312
-  "$@" &> >(gsed "s,^.*$,${gsed_replace}," >&2)
+  "$@" &> >(sed "s,^.*$,${sed_replace}," >&2)
 }
 
 function watch_pods() {
@@ -217,7 +217,7 @@ function watch_pod_logs() {
     "${pod}" || true
 
   # remove from watch list (it may be added again)
-  gsed -i "/^${pod}$/d" "${watching_pods_logs_file}"
+  sed -i "/^${pod}$/d" "${watching_pods_logs_file}"
 }
 
 function watch_pod_events() {
@@ -236,7 +236,7 @@ function watch_pod_events() {
     --field-selector involvedObject.name="${pod}" || true
 
   # remove from watch list (it may be added again)
-  gsed -i "/^${pod}$/d" "${watching_pods_events_file}"
+  sed -i "/^${pod}$/d" "${watching_pods_events_file}"
 }
 
 function watch_pods_logs_and_events() {
