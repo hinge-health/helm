@@ -149,9 +149,13 @@ function deleteCmd(helm, namespace, release) {
  * Optionally adds a plugin
  */
 async function addPlugins(helm) {
-  const plugins = JSON.parse(getInput("plugins"));
+  const plugins = getInput("plugins");
+  const jsonpluguns = JSON.parse(plugins);
 
-  core.debug(`param: plugins = "${plugins}"`);
+  core.debug(` plugins = "${plugins}"`);
+  core.debug(` jsonplugins = "${jsonplugins}"`);
+  const typepluginsvar = typeof jsonplugins;
+  core.debug(` type is ${typepluginsvar}`);
 
   if (plugins) {
     for (const plugin of plugins) {
