@@ -316,7 +316,7 @@ namespace="$(get_namespace "$@")"
 version=${IMAGE_TAG}
 echo "app version is ${IMAGE_TAG}"
 env
-c helm3 upgrade "$@" --timeout 20s --debug &
+c helm3 upgrade "$@" &
 pid="$!"
 
 watch_pods "${release}" "${namespace}" "${version}" &
