@@ -30,6 +30,9 @@ RUN apk add --no-cache ca-certificates \
     mv ./kubectl /usr/bin/kubectl
 
 ADD helm-github /helm-github
+ADD helm_upgrade_logs.sh /usr/local/bin/helm_upgrade_log.sh
+
+RUN chmod +x /usr/local/bin/helm_upgrade_logs.sh
 
 ENV PYTHONPATH "/usr/lib/python3.8/site-packages/"
 

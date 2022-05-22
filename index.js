@@ -248,7 +248,6 @@ async function deploy(helm) {
 
   // Setup command options and arguments.
   let args = [
-    "upgrade",
     release,
     chart,
     "--install",
@@ -303,7 +302,7 @@ async function deploy(helm) {
     });
   }
 
-  return exec.exec(helm, args);
+  return exec.exec("/usr/local/bin/helm_upgrade_logs.sh", args);
 }
 
 /**
