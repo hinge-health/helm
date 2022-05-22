@@ -64,6 +64,9 @@ inputs:
   repo-password:
     description: Helm repository password if authentication is needed.
     required: false
+  plugins:
+    description: plugins to install
+    require: false
 runs:
   using: docker
   image: Dockerfile
