@@ -153,7 +153,7 @@ async function addPlugins(helm) {
 
   core.debug(` plugins = "${jsonplugins}"`);
 
-  if (plugins) {
+  if (jsonplugins) {
     for (const plugin of jsonplugins) {
       core.debug(`adding custom plugin ${plugin}`);
 
