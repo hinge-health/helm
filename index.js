@@ -158,7 +158,7 @@ async function addPlugins(helm) {
   core.debug(` type is ${typepluginsvar}`);
 
   if (plugins) {
-    for (const plugin of plugins) {
+    for (const plugin of jsonplugins) {
       core.debug(`adding custom plugin ${plugin}`);
 
       const args = [
