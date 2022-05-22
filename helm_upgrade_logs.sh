@@ -191,12 +191,13 @@ function prefix_output() {
 function watch_pods() {
   local release="$1"
   local namespace="$2"
+  local version="$3"
 
   sleep 3 # Prevent flodding the logs with the initial output
   prefix_output "pods" "1;32" c kubectl get pods \
     --namespace "${namespace}" \
     --watch \
-    --selector "app.kubernetes.io/instance=${release}"
+    --selector "app.kubernetes.io/instance=${release},app.kubernetes.io/version=${version}"
 }
 
 function watch_pod_logs() {
@@ -242,12 +243,13 @@ function watch_pod_events() {
 function watch_pods_logs_and_events() {
   local release="$1"
   local namespace="$2"
+  local version="$3"
 
   sleep 10 # Prevent flodding the logs with the initial output
   while true; do
     local args=(
       --namespace "${namespace}"
-      --selector "app.kubernetes.io/instance=${release}"
+      --selector "app.kubernetes.io/instance=${release},app.kubernetes.io/version=${version}"
       --output jsonpath='{.items[*].metadata.name}'
     )
 
@@ -311,13 +313,15 @@ function main() {
 }
 release="$(get_first_non_option "$@")"
 namespace="$(get_namespace "$@")"
+version=${IMAGE_TAG}
+echo "app version is ${IMAGE_TAG}"
 env
 c helm3 upgrade "$@" --timeout 20s --debug &
 pid="$!"
 
-watch_pods "${release}" "${namespace}" &
+watch_pods "${release}" "${namespace}" "${version}" &
 
-watch_pods_logs_and_events "${release}" "${namespace}" &
+watch_pods_logs_and_events "${release}" "${namespace}" "${version}" &
 
 wait "${pid}"
 rm -rf helm_upgrade_log_tmp
