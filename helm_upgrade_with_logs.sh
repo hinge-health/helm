@@ -6,6 +6,14 @@ if [[ -n "${DEBUG:-}" ]]; then
   set -x
 fi
 
+function cleanup() {
+  echo "Exiting and cleaning up after ourselves."
+  pids="$(pgrep sleep) $(pgrep kubectl)" # had no luck with killall...
+  if [[ $pids != "" ]]; then
+    kill $pids
+  fi
+}
+
 trap cleanup EXIT HUP TERM INT
 
 function watch_pods() {
