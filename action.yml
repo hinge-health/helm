@@ -64,6 +64,9 @@ inputs:
   repo-password:
     description: Helm repository password if authentication is needed.
     required: false
+  timeout:
+    description: Time helm will wait before declaring the release a failure.
+    required: false
   plugins:
     description: plugins to install
     require: false
