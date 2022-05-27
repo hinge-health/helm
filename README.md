@@ -4,6 +4,9 @@ Deploys a helm chart using GitHub actions. Supports canary deployments and
 provides a built in helm chart for apps that listen over http to get your ramped
 up quickly.
 
+The deploy actions has been crudely modified to use a script that returns events
+and logs from the pods being deployed.
+
 View an example repository using this action at
 [github.com/deliverybot/example-helm](https://github.com/deliverybot/example-helm).
 
@@ -39,6 +42,7 @@ payload if the action was triggered by a deployment.
 - `repo-username`: Helm repository username if authentication is needed.
 - `repo-password`: Helm repository password if authentication is needed.
 - `atomic`: If true, upgrade process rolls back changes made in case of failed upgrade. Defaults to true.
+- `plugins`: Optional list of helm plugins to install, formed as a stringified array e.g. '["plugin-one", "plugin-two"]'
 
 Additional parameters: If the action is being triggered by a deployment event
 and the `task` parameter in the deployment event is set to `"remove"` then this
@@ -85,7 +89,7 @@ jobs:
           name: foobar
         value-files: >-
         [
-          "values.yaml", 
+          "values.yaml",
           "values.production.yaml"
         ]
       env:

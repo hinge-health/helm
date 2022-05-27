@@ -146,6 +146,31 @@ function deleteCmd(helm, namespace, release) {
 }
 
 /*
+ * Optionally adds a plugin
+ */
+async function addPlugins(helm) {
+  const jsonplugins = JSON.parse(getInput("plugins"));
+
+  core.debug(` plugins = "${jsonplugins}"`);
+
+  if (jsonplugins) {
+    for (const plugin of jsonplugins) {
+      core.debug(`adding custom plugin ${plugin}`);
+
+      const args = [
+        "plugin",
+        "install",
+        plugin,
+      ]
+
+      await exec.exec(helm, args);
+    }
+  }
+
+  return Promise.resolve()
+}
+
+/*
  * Optionally add a helm repository
  */
 async function addRepo(helm) {
@@ -223,7 +248,6 @@ async function deploy(helm) {
 
   // Setup command options and arguments.
   let args = [
-    "upgrade",
     release,
     chart,
     "--install",
@@ -278,14 +302,14 @@ async function deploy(helm) {
     });
   }
 
-  return exec.exec(helm, args);
+  return exec.exec("/usr/local/bin/helm_upgrade_with_logs.sh", args);
 }
 
 /**
  * Run executes the helm deployment.
  */
 async function run() {
-  const commands = [addRepo, deploy]
+  const commands = [addPlugins, addRepo, deploy]
 
   try {
     await status("pending");
@@ -293,13 +317,13 @@ async function run() {
     process.env.XDG_DATA_HOME = "/root/.helm/"
     process.env.XDG_CACHE_HOME = "/root/.helm/"
     process.env.XDG_CONFIG_HOME = "/root/.helm/"
-  
+
     // Setup necessary files.
     if (process.env.KUBECONFIG_FILE) {
       process.env.KUBECONFIG = "./kubeconfig.yml";
       await writeFile(process.env.KUBECONFIG, process.env.KUBECONFIG_FILE);
     }
-    
+
     const helm = getInput("helm") || "helm3";
     core.debug(`param: helm = "${helm}"`);
 
