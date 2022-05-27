@@ -168,7 +168,7 @@ jobs:
 
 ## Example add custom repository
 
-Sometime you may want to add a custom repository, like [chartmuseum](https://github.com/helm/chartmuseum). For th
+Sometime you may want to add a custom repository, like [chartmuseum](https://github.com/helm/chartmuseum).
 
 ```yaml
 # .github/workflows/pr-cleanup.yml
