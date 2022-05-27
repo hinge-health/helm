@@ -71,7 +71,8 @@ function watch_pods_logs() {
       --output jsonpath='{.items[*].metadata.name}'
     )
 
-  running_pods=$(kubectl get pods "${args[@]}" --field-selector=status.phase=Running 2> /dev/null)
+  running_pods=$(kubectl get pods "${args[@]}" --field-selector=status.phase=Running -ojson | jq -r '.items[] | select(.status.containerStatuses[].started | not) | .metadata.name' 2> /dev/null)
+  echo $running_pods
   if [[ $running_pods == "" ]]; then
     echo "Searching for pods with logs to display..."
     sleep 8
