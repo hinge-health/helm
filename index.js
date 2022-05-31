@@ -302,7 +302,7 @@ async function deploy(helm) {
     });
   }
 
-  return exec.exec("/usr/local/bin/helm_upgrade_with_logs.sh", args);
+  return exec.exec(helm, args);
 }
 
 /**
