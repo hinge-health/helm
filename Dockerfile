@@ -4,6 +4,7 @@ ENV BASE_URL="https://get.helm.sh"
 
 ENV HELM_2_FILE="helm-v2.17.0-linux-amd64.tar.gz"
 ENV HELM_3_FILE="helm-v3.4.2-linux-amd64.tar.gz"
+ENV KUBECTL_VERSION="v1.22.10"
 
 RUN apk add --no-cache ca-certificates \
     --repository http://dl-3.alpinelinux.org/alpine/edge/community/ \
@@ -25,7 +26,7 @@ RUN apk add --no-cache ca-certificates \
     rm -rf linux-amd64 && \
     # Init version 2 helm:
     helm init --client-only && \
-    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl" && \
     chmod +x ./kubectl && \
     mv ./kubectl /usr/bin/kubectl
 
