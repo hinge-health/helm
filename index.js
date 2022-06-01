@@ -250,6 +250,7 @@ async function deploy(helm) {
 
   // Setup command options and arguments.
   let args = [
+    "upgrade",
     release,
     chart,
     "--install",
