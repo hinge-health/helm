@@ -304,6 +304,8 @@ async function deploy(helm) {
       ignoreReturnCode: true
     });
   }
+  const helm_plugins_dir = exec.exec(helm, "env")
+  core.debug(`plugins dir is=${helm_plugins_dir}`);
 
   return exec.exec(helm, args);
 }
