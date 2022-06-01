@@ -151,9 +151,6 @@ function deleteCmd(helm, namespace, release) {
 async function addPlugins(helm) {
   const plugins = getInput("plugins");
 
-  const helm_plugins_dir = exec.exec(helm, "env");
-  core.debug(`plugins dir is=${helm_plugins_dir}`);
-
   if (plugins !== "") {
     const jsonplugins = JSON.parse(plugins);
 

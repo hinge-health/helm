@@ -30,7 +30,7 @@ RUN apk add --no-cache ca-certificates \
     chmod +x ./kubectl && \
     mv ./kubectl /usr/bin/kubectl
 
-ADD helm-github /root/.local/share/helm/plugins/helm-github
+ADD helm-github /root/.helm/helm/plugins/helm-github
 ADD helm_upgrade_with_logs.sh /usr/local/bin/helm_upgrade_with_logs.sh
 
 RUN chmod +x /usr/local/bin/helm_upgrade_with_logs.sh
