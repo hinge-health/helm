@@ -251,26 +251,22 @@ async function deploy(helm) {
   core.debug(`param: use_logs_script = "${logScript}"`);
 
   // Setup command options and arguments.
+  let args = [
+    release,
+    chart,
+    "--install",
+    "--wait",
+    `--namespace=${namespace}`,
+  ];
 
   if (logScript) {
     const helmDeployCommand = [
       "helm_upgrade_with_logs.sh",
-      release,
-      chart,
-      "--install",
-      "--wait",
-      `--namespace=${namespace}`,
     ];
-    const helmDeploycommand = ""
   } else {
     const helmDeployCommand = [
       helm,
       "upgrade",
-      release,
-      chart,
-      "--install",
-      "--wait",
-      `--namespace=${namespace}`,
     ]
   }
 
@@ -321,7 +317,7 @@ async function deploy(helm) {
     });
   }
 
-  return exec.exec(helmDeployCommand);
+  return exec.exec(helmDeployCommand, args);
 
 }
 
