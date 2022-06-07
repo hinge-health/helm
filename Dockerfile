@@ -4,10 +4,11 @@ ENV BASE_URL="https://get.helm.sh"
 
 ENV HELM_2_FILE="helm-v2.17.0-linux-amd64.tar.gz"
 ENV HELM_3_FILE="helm-v3.4.2-linux-amd64.tar.gz"
+ENV KUBECTL_VERSION="v1.22.10"
 
 RUN apk add --no-cache ca-certificates \
     --repository http://dl-3.alpinelinux.org/alpine/edge/community/ \
-    jq curl bash nodejs && \
+    jq curl bash nodejs git && \
     # Install python3 and AWS CLI:
     apk add --update --no-cache python3 && \
     ln -sf python3 /usr/bin/python && \
@@ -25,11 +26,11 @@ RUN apk add --no-cache ca-certificates \
     rm -rf linux-amd64 && \
     # Init version 2 helm:
     helm init --client-only && \
-    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl" && \
     chmod +x ./kubectl && \
     mv ./kubectl /usr/bin/kubectl
 
-ADD helm-github /root/.local/share/helm/plugins/helm-github
+ADD helm-github /root/.helm/helm/plugins/helm-github
 ADD helm_upgrade_with_logs.sh /usr/local/bin/helm_upgrade_with_logs.sh
 
 RUN chmod +x /usr/local/bin/helm_upgrade_with_logs.sh

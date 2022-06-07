@@ -149,11 +149,13 @@ function deleteCmd(helm, namespace, release) {
  * Optionally adds a plugin
  */
 async function addPlugins(helm) {
-  const jsonplugins = JSON.parse(getInput("plugins"));
+  const plugins = getInput("plugins");
 
-  core.debug(` plugins = "${jsonplugins}"`);
+  if (plugins !== "") {
+    const jsonplugins = JSON.parse(plugins);
 
-  if (jsonplugins) {
+    core.debug(` plugins = "${jsonplugins}"`);
+
     for (const plugin of jsonplugins) {
       core.debug(`adding custom plugin ${plugin}`);
 
@@ -229,6 +231,7 @@ async function deploy(helm) {
   const dryRun = core.getInput("dry-run");
   const secrets = getSecrets(core.getInput("secrets"));
   const atomic = getInput("atomic") || true;
+  const logScript = getInput("use-logs-script") || false;
 
   core.debug(`param: track = "${track}"`);
   core.debug(`param: release = "${release}"`);
@@ -245,6 +248,7 @@ async function deploy(helm) {
   core.debug(`param: removeCanary = ${removeCanary}`);
   core.debug(`param: timeout = "${timeout}"`);
   core.debug(`param: atomic = "${atomic}"`);
+  core.debug(`param: use_logs_script = "${logScript}"`);
 
   // Setup command options and arguments.
   let args = [
@@ -254,6 +258,12 @@ async function deploy(helm) {
     "--wait",
     `--namespace=${namespace}`,
   ];
+
+  if (logScript) {
+    var helmDeployCommand = "helm_upgrade_with_logs.sh";
+  } else {
+    var helmDeployCommand = "helm3 upgrade";
+  }
 
   if (dryRun) args.push("--dry-run");
   if (appName) args.push(`--set=app.name=${appName}`);
@@ -302,7 +312,8 @@ async function deploy(helm) {
     });
   }
 
-  return exec.exec(helm, args);
+  return exec.exec(helmDeployCommand, args);
+
 }
 
 /**
