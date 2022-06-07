@@ -260,11 +260,11 @@ async function deploy(helm) {
   ];
 
   if (logScript) {
-    const helmDeployCommand = [
+    let helmDeployCommand = [
       "helm_upgrade_with_logs.sh",
     ];
   } else {
-    const helmDeployCommand = [
+    let helmDeployCommand = [
       helm,
       "upgrade",
     ];
