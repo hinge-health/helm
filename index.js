@@ -260,14 +260,9 @@ async function deploy(helm) {
   ];
 
   if (logScript) {
-    var helmDeployCommand = [
-      "helm_upgrade_with_logs.sh",
-    ];
+    var helmDeployCommand = "helm_upgrade_with_logs.sh";
   } else {
-    var helmDeployCommand = [
-      helm,
-      "upgrade",
-    ];
+    var helmDeployCommand = "helm3 upgrade";
   }
 
   if (dryRun) args.push("--dry-run");
