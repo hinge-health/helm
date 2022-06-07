@@ -264,7 +264,7 @@ async function deploy(helm) {
     const helmDeploycommand = ""
   } else {
     const helmDeployCommand = [
-      helm
+      helm,
       "upgrade",
       release,
       chart,
