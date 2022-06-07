@@ -96,6 +96,38 @@ jobs:
         KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
 ```
 
+## Example using a private github repo
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy
+on: ['deployment']
+
+jobs:
+  deployment:
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: 'Deploy'
+      uses: 'deliverybot/helm@v1'
+      with:
+        release: 'nginx'
+        namespace: 'default'
+        chart: 'app'
+        token: '${{ github.token }}'
+        values: |
+          name: foobar
+        value-files: >-
+        [
+          "values.yaml",
+          "values.production.yaml"
+        ]
+      env:
+        KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
+        GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+```
+
 ## Example canary
 
 If a track is chosen that is equal to canary, this updates the helm chart
