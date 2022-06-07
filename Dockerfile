@@ -8,7 +8,7 @@ ENV KUBECTL_VERSION="v1.22.10"
 
 RUN apk add --no-cache ca-certificates \
     --repository http://dl-3.alpinelinux.org/alpine/edge/community/ \
-    jq curl bash nodejs && \
+    jq curl bash nodejs git && \
     # Install python3 and AWS CLI:
     apk add --update --no-cache python3 && \
     ln -sf python3 /usr/bin/python && \
