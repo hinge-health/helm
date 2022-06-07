@@ -267,7 +267,7 @@ async function deploy(helm) {
     const helmDeployCommand = [
       helm,
       "upgrade",
-    ]
+    ];
   }
 
   if (dryRun) args.push("--dry-run");
