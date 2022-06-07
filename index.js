@@ -231,7 +231,7 @@ async function deploy(helm) {
   const dryRun = core.getInput("dry-run");
   const secrets = getSecrets(core.getInput("secrets"));
   const atomic = getInput("atomic") || true;
-  const logScript = getInput("use_logs_script") || false;
+  const logScript = getInput("use-logs-script") || false;
 
   core.debug(`param: track = "${track}"`);
   core.debug(`param: release = "${release}"`);
