@@ -231,6 +231,7 @@ async function deploy(helm) {
   const dryRun = core.getInput("dry-run");
   const secrets = getSecrets(core.getInput("secrets"));
   const atomic = getInput("atomic") || true;
+  const logScript = getInput("use_logs_script") || false;
 
   core.debug(`param: track = "${track}"`);
   core.debug(`param: release = "${release}"`);
@@ -247,16 +248,28 @@ async function deploy(helm) {
   core.debug(`param: removeCanary = ${removeCanary}`);
   core.debug(`param: timeout = "${timeout}"`);
   core.debug(`param: atomic = "${atomic}"`);
+  core.debug(`param: use_logs_script = "${logScript}"`);
 
   // Setup command options and arguments.
-  let args = [
-    "upgrade",
-    release,
-    chart,
-    "--install",
-    "--wait",
-    `--namespace=${namespace}`,
-  ];
+
+  if (logScript) {
+    let args = [
+      release,
+      chart,
+      "--install",
+      "--wait",
+      `--namespace=${namespace}`,
+    ];
+  } else {
+    let args = [
+      "upgrade",
+      release,
+      chart,
+      "--install",
+      "--wait",
+      `--namespace=${namespace}`,
+    ]
+  }
 
   if (dryRun) args.push("--dry-run");
   if (appName) args.push(`--set=app.name=${appName}`);
@@ -304,8 +317,11 @@ async function deploy(helm) {
       ignoreReturnCode: true
     });
   }
-
-  return exec.exec(helm, args);
+  if (helmLogs) {
+    return exec.exec("/usr/local/bin/helm_upgrade_with_logs.sh", args);
+  } else {
+    return exec.exec(helm, args);
+  }
 }
 
 /**

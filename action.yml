@@ -68,7 +68,10 @@ inputs:
     description: Time helm will wait before declaring the release a failure.
     required: false
   plugins:
-    description: plugins to install
+    description: Optional plugins to install.
+    require: false
+  use-logs-script:
+    description: Whether or not to use Aaron's hilarious debugging bash script to aid in debugging deploys.
     require: false
 runs:
   using: docker
