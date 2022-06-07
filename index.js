@@ -253,15 +253,18 @@ async function deploy(helm) {
   // Setup command options and arguments.
 
   if (logScript) {
-    let args = [
+    const helmDeployCommand = [
+      "helm_upgrade_with_logs.sh",
       release,
       chart,
       "--install",
       "--wait",
       `--namespace=${namespace}`,
     ];
+    const helmDeploycommand = ""
   } else {
-    let args = [
+    const helmDeployCommand = [
+      helm
       "upgrade",
       release,
       chart,
@@ -317,11 +320,9 @@ async function deploy(helm) {
       ignoreReturnCode: true
     });
   }
-  if (helmLogs) {
-    return exec.exec("/usr/local/bin/helm_upgrade_with_logs.sh", args);
-  } else {
-    return exec.exec(helm, args);
-  }
+
+  return exec.exec(helmDeployCommand);
+
 }
 
 /**
