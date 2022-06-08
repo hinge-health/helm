@@ -43,6 +43,7 @@ payload if the action was triggered by a deployment.
 - `repo-password`: Helm repository password if authentication is needed.
 - `atomic`: If true, upgrade process rolls back changes made in case of failed upgrade. Defaults to true.
 - `plugins`: Optional list of helm plugins to install, formed as a stringified array e.g. '["plugin-one", "plugin-two"]'
+- `use-logs-script`: Option to employ a script that attempts to return information about the attempted release.
 
 Additional parameters: If the action is being triggered by a deployment event
 and the `task` parameter in the deployment event is set to `"remove"` then this
