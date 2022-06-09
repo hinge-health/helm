@@ -44,8 +44,8 @@ function watch_pods_events() {
     pending_pods=$(kubectl get pods ${args[@]} --field-selector=status.phase=Pending 2> /dev/null)
     if [[ $pending_pods == "" ]]; then
       echo "No pending pods found.."
-      continue
       sleep 3
+      continue
     fi
     echo "Found some pods, emitting their events..."
     break
@@ -115,14 +115,12 @@ release="$(get_first_non_option "$@")"
 namespace="$(get_namespace "$@")"
 version=${IMAGE_TAG} # should be in the environment in our github workflow
 
-helm3 upgrade "$@" & # our action calls it helm3 (because we use helm 3)
-pid="$!"
-
-sleep 5 # Give things a chance to get started
-
 watch_pods "${release}" "${namespace}" "${version}" &
 watch_pods_logs "${release}" "${namespace}" "${version}" &
-watch_pods_events $release $namespace $version &
+watch_pods_events "${release}" "${namespace}" "${version}" &
+
+helm3 upgrade "$@" & # our action calls it helm3 (because we use helm 3)
+pid="$!"
 
 wait ${pid}
 helm_status=$?
