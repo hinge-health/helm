@@ -12,6 +12,7 @@ function cleanup() {
   if [[ $pids != "" ]]; then
     kill $pids
   fi
+  killall helm
 }
 
 trap cleanup EXIT HUP TERM INT
@@ -119,7 +120,7 @@ watch_pods "${release}" "${namespace}" "${version}" &
 watch_pods_logs "${release}" "${namespace}" "${version}" &
 watch_pods_events "${release}" "${namespace}" "${version}" &
 
-helm3 upgrade "$@" & # our action calls it helm3 (because we use helm 3)
+helm upgrade "$@" &
 pid="$!"
 
 wait ${pid}
