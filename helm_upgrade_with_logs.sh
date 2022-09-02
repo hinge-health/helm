@@ -8,11 +8,10 @@ fi
 
 function cleanup() {
   echo "Exiting and cleaning up after ourselves."
-  pids="$(pgrep sleep) $(pgrep kubectl)" # had no luck with killall...
+  pids="$(pgrep sleep) $(pgrep kubectl) $(pgrep helm)" # had no luck with killall...
   if [[ $pids != "" ]]; then
     kill $pids
   fi
-  killall helm
 }
 
 trap cleanup EXIT HUP TERM INT
