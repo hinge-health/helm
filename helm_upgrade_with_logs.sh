@@ -9,7 +9,7 @@ fi
 trap cleanup HUP TERM INT
 
 function cleanup() {
-  kill 0
+  pkill -P $$
 }
 
 function watch_pods() {
@@ -118,5 +118,5 @@ pid="$!"
 
 wait ${pid}
 helm_status=$?
-cleanup
+# cleanup
 exit $helm_status
