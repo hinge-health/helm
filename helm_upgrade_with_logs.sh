@@ -12,10 +12,7 @@ trap shutdownhelm SIGTERM SIGHUP SIGINT
 
 function cleanup() {
   pkill -P $$
-}
-
-function shutdownhelm {
-  pkill -1 helm
+  pkill -HUP helm
 }
 
 function watch_pods() {
