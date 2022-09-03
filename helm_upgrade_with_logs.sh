@@ -6,7 +6,7 @@ if [[ -n "${DEBUG:-}" ]]; then
   set -x
 fi
 
-trap cleanup HUP TERM INT
+trap cleanup EXIT SIGHUP SIGTERM SIGINT
 
 function cleanup() {
   pkill -P $$
