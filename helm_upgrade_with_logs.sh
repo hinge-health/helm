@@ -6,9 +6,9 @@ if [[ -n "${DEBUG:-}" ]]; then
   set -x
 fi
 
-trap cleanup EXIT
+trap cleanup EXIT SIGTERM SIGHUP SIGINT
 
-trap shutdownhelm SIGTERM SIGHUP SIGINT
+# trap shutdownhelm
 
 function cleanup() {
   pkill -P $$
