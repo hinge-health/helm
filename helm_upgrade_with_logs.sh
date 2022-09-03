@@ -6,13 +6,14 @@ if [[ -n "${DEBUG:-}" ]]; then
   set -x
 fi
 
-trap cleanup EXIT SIGTERM SIGHUP SIGINT
+trap cleanup 1 2 3 6
 
 # trap shutdownhelm
 
 function cleanup() {
+  echo "cleaning up."
   pkill -P $$
-  pkill -HUP helm
+  kill -HUP $(pgrep helm)
 }
 
 function watch_pods() {
