@@ -6,7 +6,7 @@ if [[ -n "${DEBUG:-}" ]]; then
   set -x
 fi
 
-trap cleanup EXIT HUP TERM INT
+trap cleanup 1 2 3 6 9
 
 # trap shutdownhelm
 
