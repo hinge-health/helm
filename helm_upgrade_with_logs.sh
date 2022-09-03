@@ -6,19 +6,11 @@ if [[ -n "${DEBUG:-}" ]]; then
   set -x
 fi
 
-function cleanup() {
-  echo "Exiting and cleaning up after ourselves."
-  pids="$(pgrep sleep) $(pgrep kubectl)" # had no luck with killall...
-  if [[ $pids != "" ]]; then
-    kill $pids
-  fi
-  helm_pids="$(pgrep helm)"
-  if [[ $helm_pids != "" ]]; then
-    kill $pids
-  fi
-}
+trap cleanup HUP TERM INT
 
-trap cleanup EXIT HUP TERM INT
+function cleanup() {
+  kill 0
+}
 
 function watch_pods() {
   local release="$1"
@@ -47,7 +39,6 @@ function watch_pods_events() {
 
     pending_pods=$(kubectl get pods ${args[@]} --field-selector=status.phase=Pending 2> /dev/null)
     if [[ $pending_pods == "" ]]; then
-      echo "No pending pods found.."
       sleep 3
       continue
     fi
@@ -78,7 +69,6 @@ function watch_pods_logs() {
   running_pods=$(kubectl get pods "${args[@]}" --field-selector=status.phase=Running -ojson | jq -r '.items[] | select(.status.containerStatuses[].started | not) | .metadata.name' 2> /dev/null)
   echo $running_pods
   if [[ $running_pods == "" ]]; then
-    echo "Searching for pods with logs to display..."
     sleep 8
     continue
   fi
@@ -128,4 +118,5 @@ pid="$!"
 
 wait ${pid}
 helm_status=$?
+cleanup
 exit $helm_status
