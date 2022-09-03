@@ -8,7 +8,7 @@ fi
 
 trap cleanup EXIT
 
-trap shutdownhelm SIGTERM SIGHUP
+trap shutdownhelm SIGTERM SIGHUP SIGINT
 
 function cleanup() {
   pkill -P $$
