@@ -1,4 +1,4 @@
-trap "echo FUCK YOU; exit" SIGINT SIGTERM
+trap "echo FUCK YOU; exit" SIGINT SIGTERM EXIT SIGHUP
 
 while true
 do
